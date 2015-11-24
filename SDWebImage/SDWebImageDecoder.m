@@ -21,6 +21,7 @@
     CGImageAlphaInfo alpha = CGImageGetAlphaInfo(imageRef);
     BOOL anyAlpha = (alpha == kCGImageAlphaFirst ||
                      alpha == kCGImageAlphaLast ||
+                     alpha == kCGImageAlphaNone ||
                      alpha == kCGImageAlphaPremultipliedFirst ||
                      alpha == kCGImageAlphaPremultipliedLast);
 
