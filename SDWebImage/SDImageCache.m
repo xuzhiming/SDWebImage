@@ -196,6 +196,16 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
     return [paths[0] stringByAppendingPathComponent:fullNamespace];
 }
 
+-(BOOL)isPngImage:(UIImage *)image{
+    int alphaInfo = CGImageGetAlphaInfo(image.CGImage);
+    BOOL hasAlpha = !(alphaInfo == kCGImageAlphaNone ||
+                      alphaInfo == kCGImageAlphaNoneSkipFirst ||
+                      alphaInfo == kCGImageAlphaNoneSkipLast);
+    BOOL imageIsPng = hasAlpha;
+    
+    return imageIsPng;
+}
+
 - (void)storeImage:(UIImage *)image recalculateFromImage:(BOOL)recalculate imageData:(NSData *)imageData forKey:(NSString *)key toDisk:(BOOL)toDisk {
     if (!image || !key) {
         return;
@@ -203,7 +213,11 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
     // if memory cache is enabled
     if (self.shouldCacheImagesInMemory) {
         NSUInteger cost = SDCacheCostForImage(image);
-        [self.memCache setObject:image forKey:key cost:cost];
+//        if (cost <= 10*1024*1024)
+        if([self isPngImage:image])
+        {
+            [self.memCache setObject:image forKey:key cost:cost];
+        }
     }
 
     if (toDisk) {
@@ -378,7 +392,11 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
             UIImage *diskImage = [self diskImageForKey:key];
             if (diskImage && self.shouldCacheImagesInMemory) {
                 NSUInteger cost = SDCacheCostForImage(diskImage);
-                [self.memCache setObject:diskImage forKey:key cost:cost];
+//                if (cost <= 10*1024*1024)
+                if([self isPngImage:diskImage])
+                {
+                    [self.memCache setObject:diskImage forKey:key cost:cost];
+                }
             }
 
             dispatch_async(dispatch_get_main_queue(), ^{
