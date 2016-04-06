@@ -214,7 +214,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
     if (self.shouldCacheImagesInMemory) {
         NSUInteger cost = SDCacheCostForImage(image);
 //        if (cost <= 10*1024*1024)
-        if([self isPngImage:image])
+        if([self isPngImage:image] || cost <= .5*1024*1024)
         {
             [self.memCache setObject:image forKey:key cost:cost];
         }
@@ -393,7 +393,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
             if (diskImage && self.shouldCacheImagesInMemory) {
                 NSUInteger cost = SDCacheCostForImage(diskImage);
 //                if (cost <= 10*1024*1024)
-                if([self isPngImage:diskImage])
+                if([self isPngImage:diskImage] || cost <= .5*1024*1024)
                 {
                     [self.memCache setObject:diskImage forKey:key cost:cost];
                 }
